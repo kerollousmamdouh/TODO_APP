@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Modern Todo App</title>
+  <style>
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+
+* {
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: linear-gradient(135deg, #0d0d0d, #1a1a1a);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #f1f1f1;
+}
+
+.container {
+  width: 500px;
+  background: #111;
+  border-radius: 24px;
+  padding: 30px;
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 24px;
+  font-weight: 700;
+  font-size: 32px;
+  background: linear-gradient(135deg, #ff6a00, #ee0979);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradientText 5s infinite alternate;
+}
+
+@keyframes gradientText {
+  0% {background-position:0% 50%;}
+  100% {background-position:100% 50%;}
+}
+
+.input-box {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.input-box input {
+  flex: 1;
+  padding: 14px;
+  border-radius: 14px;
+  border: none;
+  background: #222;
+  color: #fff;
+  font-size: 14px;
+  outline: none;
+}
+
+.input-box input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.add-btn {
+  width: 100%;
+  margin-bottom: 18px;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #ff6a00, #ee0979);
+  color: white;
+  font-weight: 500;
+  padding: 14px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.add-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(255, 106, 0, 0.5);
+}
+
+.toolbar input {
+  width: 100%;
+  padding: 14px;
+  border-radius: 14px;
+  border: none;
+  background: #222;
+  color: #fff;
+  font-size: 14px;
+  outline: none;
+  margin-bottom: 12px;
+}
+
+.filters {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.filters button {
+  border: none;
+  background: #222;
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.filters button:hover {
+  background: #333;
+}
+
+.progress-bar {
+  background: #222;
+  height: 12px;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+#progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #22c55e, #4ade80);
+  width: 0%;
+  transition: 0.5s;
+}
+
+.todo-item {
+  background: #222;
+  padding: 14px 18px;
+  margin-bottom: 12px;
+  border-radius: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid rgba(255,255,255,0.05);
+  transition: 0.3s;
+}
+
+.todo-item:hover {
+  transform: translateY(-2px);
+  background: #333;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.5);
+}
+
+.todo-item.completed h3,
+.todo-item.completed p {
+  text-decoration: line-through;
+  opacity: 0.5;
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.left h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.left p {
+  margin: 0;
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.actions button {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 22px;
+  transition: 0.2s;
+}
+
+.actions button:hover {
+  transform: scale(1.3);
+}
+
+.complete-btn { color: #22c55e; }
+.edit-btn { color: #facc15; }
+.delete-btn { color: #ef4444; }
+
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: 0.3s;
+  z-index: 999;
+}
+
+.modal.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.modal-box {
+  background: #111;
+  padding: 26px;
+  border-radius: 20px;
+  width: 320px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.modal-box input {
+  width: 100%;
+  margin-bottom: 14px;
+  padding: 12px;
+  border-radius: 12px;
+  border: none;
+  background: #222;
+  color: #fff;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+}
+
+.modal-actions button {
+  border: none;
+  padding: 10px 18px;
+  border-radius: 12px;
+  cursor: pointer;
+  background: linear-gradient(135deg, #ff6a00, #ee0979);
+  color: white;
+  font-weight: 500;
+}
+
+.modal-actions .cancel {
+  background: rgba(93,91,91,0.2);
+}
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>📝 Modern Todo App</h1>
+
+  <div class="input-box">
+    <input id="taskTitle" placeholder="Task title">
+    <input id="taskDesc" placeholder="Task description (optional)">
+  </div>
+  <button class="add-btn" onclick="addTodo()">Add</button>
+
+  <div class="toolbar">
+    <input id="searchInput" onkeyup="searchTodos()" placeholder="Search tasks...">
+
+    <div class="filters">
+      <button onclick="filterTodos('all')">All</button>
+      <button onclick="filterTodos('pending')">Pending</button>
+      <button onclick="filterTodos('completed')">Completed</button>
+    </div>
+  </div>
+
+  <div class="progress-bar">
+    <div id="progressFill"></div>
+  </div>
+  <p id="progressText"></p>
+
+  <div id="todoList"></div>
+</div>
+
+<!-- Edit Modal -->
+<div id="editModal" class="modal">
+  <div class="modal-box">
+    <h3>Edit Task</h3>
+    <input id="editTitle" placeholder="Title">
+    <input id="editDesc" placeholder="Description">
+
+    <div class="modal-actions">
+      <button onclick="updateTodo()">Save</button>
+      <button class="cancel" onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let todosData = JSON.parse(localStorage.getItem('todosData')) || [];
+let editId = null;
+
+function saveTodos() {
+  localStorage.setItem('todosData', JSON.stringify(todosData));
+}
+
+function renderTodos(todos) {
+  const list = document.getElementById("todoList");
+  list.innerHTML = "";
+
+  todos.forEach((todo) => {
+    const div = document.createElement("div");
+    div.className = "todo-item";
+    if (todo.completed) div.classList.add("completed");
+
+    div.innerHTML = `
+      <div class="left">
+        <input type="checkbox" ${todo.completed ? "checked" : ""} onchange="toggleTodo(${todo.id}, this.checked)">
+        <div>
+          <h3>${todo.title}</h3>
+          <p>${todo.description || ""}</p>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="edit-btn" onclick="openModal(${todo.id})">✏</button>
+        <button class="delete-btn" onclick="deleteTodo(${todo.id})">🗑</button>
+      </div>
+    `;
+    list.appendChild(div);
+  });
+  updateProgress();
+}
+
+function addTodo() {
+  const title = document.getElementById("taskTitle").value.trim();
+  const description = document.getElementById("taskDesc").value.trim();
+  if (!title) return alert("Title required");
+
+  const newTodo = {
+    id: Date.now(),
+    title,
+    description,
+    completed: false
+  };
+  todosData.push(newTodo);
+  saveTodos();
+  renderTodos(todosData);
+
+  document.getElementById("taskTitle").value = "";
+  document.getElementById("taskDesc").value = "";
+}
+
+function toggleTodo(id, completed) {
+  const todo = todosData.find(t => t.id === id);
+  todo.completed = completed;
+  saveTodos();
+  renderTodos(todosData);
+}
+
+function deleteTodo(id) {
+  if (!confirm("Delete this task?")) return;
+  todosData = todosData.filter(t => t.id !== id);
+  saveTodos();
+  renderTodos(todosData);
+}
+
+function openModal(id) {
+  const todo = todosData.find(t => t.id === id);
+  editId = id;
+  document.getElementById("editTitle").value = todo.title;
+  document.getElementById("editDesc").value = todo.description || "";
+  document.getElementById("editModal").classList.add("active");
+}
+
+function closeModal() {
+  document.getElementById("editModal").classList.remove("active");
+  editId = null;
+}
+
+function updateTodo() {
+  const title = document.getElementById("editTitle").value.trim();
+  const description = document.getElementById("editDesc").value.trim();
+  if (!title) return alert("Title required");
+
+  const todo = todosData.find(t => t.id === editId);
+  todo.title = title;
+  todo.description = description;
+  saveTodos();
+  closeModal();
+  renderTodos(todosData);
+}
+
+function searchTodos() {
+  const q = document.getElementById("searchInput").value.toLowerCase();
+  renderTodos(
+    todosData.filter(t =>
+      t.title.toLowerCase().includes(q) ||
+      (t.description || "").toLowerCase().includes(q)
+    )
+  );
+}
+
+function filterTodos(type) {
+  let filtered;
+  if (type === "all") filtered = todosData;
+  if (type === "completed") filtered = todosData.filter(t => t.completed);
+  if (type === "pending") filtered = todosData.filter(t => !t.completed);
+  
+  // دمج البحث مع الفلتر
+  const q = document.getElementById("searchInput").value.toLowerCase();
+  if (q) {
+    filtered = filtered.filter(t =>
+      t.title.toLowerCase().includes(q) ||
+      (t.description || "").toLowerCase().includes(q)
+    );
+  }
+
+  renderTodos(filtered, false); // false عشان ما يحدثش progress على كل todosData
+}
+
+// تعديل renderTodos لقبول الـ filtered بشكل اختياري
+function renderTodos(todos, update = true) {
+  const list = document.getElementById("todoList");
+  list.innerHTML = "";
+
+  todos.forEach((todo) => {
+    const div = document.createElement("div");
+    div.className = "todo-item";
+    if (todo.completed) div.classList.add("completed");
+
+    div.innerHTML = `
+      <div class="left">
+        <input type="checkbox" ${todo.completed ? "checked" : ""} onchange="toggleTodo(${todo.id}, this.checked)">
+        <div>
+          <h3>${todo.title}</h3>
+          <p>${todo.description || ""}</p>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="edit-btn" onclick="openModal(${todo.id})">✏</button>
+        <button class="delete-btn" onclick="deleteTodo(${todo.id})">🗑</button>
+      </div>
+    `;
+    list.appendChild(div);
+  });
+
+  if (update) updateProgress(); // يحدث progress على كل todosData
+}
+
+function updateProgress() {
+  const total = todosData.length;
+  const completed = todosData.filter(t => t.completed).length;
+  const percent = total ? (completed / total) * 100 : 0;
+
+  document.getElementById("progressFill").style.width = percent + "%";
+  document.getElementById("progressText").innerText =
+    `${completed} / ${total} Completed`;
+}
+
+// Initial render
+renderTodos(todosData);
+</script>
+
+</body>
+</html>
